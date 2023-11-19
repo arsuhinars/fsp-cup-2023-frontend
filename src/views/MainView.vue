@@ -6,6 +6,9 @@
           Sample title
         </RouterLink>
         <NavBar :items="navItems" />
+        <button class="btn btn-secondary" @click="async () => await auth.logout()">
+          Выйти из аккаунта
+        </button>
       </div>
       <div class="right-container">
         <RouterView />
@@ -42,8 +45,10 @@
 
 .right-container {
   flex-grow: 1;
+  max-height: 100vh;
   background-color: $white;
   overflow: scroll;
+  padding: ($spacer * 2) ($spacer * 4) ($spacer * 2) ($spacer * 4);
 }
 </style>
 
@@ -58,12 +63,16 @@ const router = useRouter()
 
 const navItems = [
   {
+    displayName: 'Мой профиль',
+    to: { name: 'current_user' }
+  },
+  {
     displayName: 'Пользователи',
-    to: { name: 'users' }
+    to: { name: 'users_list' }
   },
   {
     displayName: 'Команды',
-    to: { name: 'teams' }
+    to: { name: 'teams_list' }
   },
   {
     displayName: 'Моя команда',
@@ -71,7 +80,7 @@ const navItems = [
   },
   {
     displayName: 'Турниры',
-    to: { name: 'matches' }
+    to: { name: 'matches_list' }
   }
 ]
 

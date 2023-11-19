@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { type User } from '@/schemas/user'
+import router from '@/router'
 
 export const useAuthStore = defineStore('auth', () => {
   const _credentials = ref<string | null>(null)
@@ -19,6 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout() {
     _credentials.value = null
     _user.value = null
+    router.push({ name: 'login' })
   }
 
   return { credentials, user, isAuthorized, tryLogin, logout }

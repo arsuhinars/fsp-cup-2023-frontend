@@ -22,3 +22,11 @@ main {
     width: calc(100% - $spacer * 2);
   }
 }
+
+.small-container {
+  max-width: 480px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
