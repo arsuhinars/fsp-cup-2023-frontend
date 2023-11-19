@@ -12,12 +12,20 @@
     <td>11-22-1111111</td>
     <td>Согласен</td>
     <td>
-      <button type="button" class="btn btn-primary py-2" @click="() => emit('editPlayer')">
+      <button
+        type="button"
+        class="btn btn-primary py-1 px-2 fs-6"
+        @click="() => emit('editPlayer')"
+      >
         <i class="bi bi-pencil-fill"></i>
       </button>
     </td>
     <td>
-      <button type="button" class="btn btn-danger py-2" @click="() => emit('deletePlayer')">
+      <button
+        type="button"
+        class="btn btn-danger py-1 px-2 fs-6"
+        @click="() => emit('deletePlayer')"
+      >
         <i class="bi bi-trash-fill"></i>
       </button>
     </td>

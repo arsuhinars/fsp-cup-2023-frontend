@@ -1,17 +1,28 @@
 <template>
   <form novalidate ref="form">
     <slot></slot>
+
+    <button
+      type="submit"
+      class="btn btn-primary mt-3 d-flex align-items-center"
+      v-if="submitText !== undefined"
+    >
+      <div class="spinner-border spinner-border-sm me-2" v-if="props.isLoading"></div>
+      {{ props.submitText }}
+    </button>
   </form>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 
 interface Props {
   readOnly: boolean
+  submitText?: string
+  isLoading: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), { readOnly: false })
+const props = withDefaults(defineProps<Props>(), { readOnly: false, isLoading: false })
 
 const form = ref<HTMLFormElement | null>(null)
 
@@ -21,11 +32,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  if (form.value === null) {
-    return
-  }
-
-  form.value.addEventListener('submit', (event) => {
+  form.value?.addEventListener('submit', (event) => {
     if (!form.value?.checkValidity()) {
       event.preventDefault()
       event.stopPropagation()
@@ -33,24 +40,25 @@ onMounted(() => {
 
     form.value?.classList.add('was-validated')
   })
+})
 
-  if (props.readOnly) {
-    let inputs = form.value.querySelectorAll('input')
-    let selects = form.value.querySelectorAll('select')
-    let submits = form.value.querySelectorAll('button[type=submit], input[type=submit]')
+watchEffect(() => {
+  if (form.value === null) {
+    return
+  }
 
-    for (let input of inputs) {
-      input.readOnly = true
-    }
+  for (let input of form.value.querySelectorAll('input')) {
+    input.readOnly = props.readOnly
+    input.disabled = props.isLoading
+  }
 
-    for (let select of selects) {
-      select.disabled = true
-    }
+  for (let select of form.value.querySelectorAll('select')) {
+    select.disabled = props.readOnly || props.isLoading
+  }
 
-    for (let submit of submits) {
-      if (submit instanceof HTMLButtonElement || submit instanceof HTMLInputElement) {
-        submit.disabled = true
-      }
+  for (let submit of form.value.querySelectorAll('button[type=submit], input[type=submit]')) {
+    if (submit instanceof HTMLButtonElement || submit instanceof HTMLInputElement) {
+      submit.disabled = props.readOnly || props.isLoading
     }
   }
 })

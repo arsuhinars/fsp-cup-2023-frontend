@@ -9,7 +9,11 @@
     <td>example@mail.com</td>
     <td>Администратор</td>
     <td>
-      <button class="btn btn-danger py-2" @click="() => emit('deleteUser')" ref="deleteButton">
+      <button
+        class="btn btn-danger py-1 px-2 fs-6"
+        @click="() => emit('deleteUser')"
+        ref="deleteButton"
+      >
         <i class="bi bi-trash-fill"></i>
       </button>
     </td>

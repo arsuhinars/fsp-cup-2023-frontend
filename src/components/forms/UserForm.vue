@@ -1,6 +1,10 @@
 <template>
   <div class="user-form-container">
-    <FormComponent class="user-form border me-4" :read-only="props.readOnly">
+    <FormComponent
+      class="user-form border me-4"
+      submit-text="Сохранить"
+      :is-loading="props.isLoading"
+    >
       <h3 class="mb-3">Личная информация</h3>
 
       <label for="lastName" class="form-label">Фамилия</label>
@@ -33,10 +37,13 @@
         <option value="JUDGE">Судья</option>
         <option value="CAPTAIN">Капитан команды</option>
       </select>
-
-      <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
     </FormComponent>
-    <FormComponent class="user-form border" v-if="props.includePasswordForm">
+    <FormComponent
+      class="user-form border"
+      submit-text="Изменить"
+      v-if="props.includePasswordForm"
+      :is-loading="props.isLoading"
+    >
       <h3 class="mb-3">Смена пароля</h3>
 
       <label for="oldPassword" class="form-label">Старый пароль</label>
@@ -47,8 +54,6 @@
 
       <label for="repeatPassword" class="form-label">Повторите новый пароль</label>
       <input type="text" class="form-control mb-3" id="repeatPassword" required />
-
-      <button type="submit" class="btn btn-primary mt-3">Изменить</button>
     </FormComponent>
   </div>
 </template>
@@ -76,9 +81,12 @@
 import FormComponent from '@/components/FormComponent.vue'
 
 export interface Props {
-  readOnly: boolean
+  isLoading: boolean
   includePasswordForm: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), { readOnly: false, includePasswordForm: true })
+const props = withDefaults(defineProps<Props>(), {
+  isLoading: false,
+  includePasswordForm: true
+})
 </script>

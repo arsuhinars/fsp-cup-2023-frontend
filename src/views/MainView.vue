@@ -34,6 +34,7 @@
   align-items: stretch;
   text-align: center;
   width: 340px;
+  flex-shrink: 0;
   background-color: $gray-100;
   padding: $spacer * 2;
 

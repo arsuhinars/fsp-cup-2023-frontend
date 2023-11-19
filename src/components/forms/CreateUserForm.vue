@@ -1,5 +1,5 @@
 <template>
-  <FormComponent class="user-form max-width-480">
+  <FormComponent class="max-width-480" submit-text="Создать">
     <label for="lastName" class="form-label">Фамилия</label>
     <input type="text" class="form-control mb-2" id="lastName" required />
 
@@ -36,8 +36,6 @@
 
     <label for="repeatPassword" class="form-label">Повторите пароль</label>
     <input type="password" class="form-control mb-4" id="repeatPassword" required />
-
-    <button type="submit" class="btn btn-primary mt-3">Создать</button>
   </FormComponent>
 </template>
 

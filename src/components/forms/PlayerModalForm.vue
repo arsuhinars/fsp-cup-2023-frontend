@@ -4,6 +4,7 @@
     cancelText="Отмена"
     ref="modalForm"
     @submited="() => emit('submited')"
+    :isLoading="props.isLoading"
   >
     <template v-slot:header>
       <h1 class="modal-title fs-2">{{ props.titleText }}</h1>
@@ -43,7 +44,7 @@
       <input type="email" class="form-control mb-2" id="phone" required />
 
       <label for="gto" class="form-label">ГТО</label>
-      <input type="email" class="form-control mb-4" id="gto" required />
+      <input type="text" class="form-control mb-4" id="gto" required />
 
       <div class="form-check mb-2">
         <input class="form-check-input" type="checkbox" id="approved" />
@@ -57,14 +58,18 @@
 import { ref } from 'vue'
 import ModalForm from '../ModalForm.vue'
 
+export interface Props {
+  isLoading: boolean
+  titleText: string
+}
+
 const modalForm = ref<InstanceType<typeof ModalForm> | null>(null)
 
-const props = defineProps<{
-  titleText: string
-}>()
+const props = withDefaults(defineProps<Props>(), { isLoading: false })
 const emit = defineEmits(['submited'])
 
 function show() {
+  modalForm.value?.clear()
   modalForm.value?.show()
 }
 

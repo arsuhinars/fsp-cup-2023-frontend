@@ -1,10 +1,10 @@
 <template>
   <div>
-    <FormComponent>
+    <FormComponent :is-loading="props.isLoading">
       <label for="name" class="form-label">Название</label>
       <input type="text" class="form-control max-width-480 mb-3" id="name" required />
 
-      <table class="table table-hover caption-top mt-4 mb-3">
+      <table class="table table-hover table-sm caption-top mt-4 mb-3">
         <caption>
           Участники команды
         </caption>
@@ -53,8 +53,8 @@
       </button>
     </FormComponent>
 
-    <PlayerForm titleText="Изменить участника" ref="playerEditForm" />
-    <PlayerForm titleText="Добавить участника" ref="createPlayerForm" />
+    <PlayerModalForm titleText="Изменить участника" ref="playerEditForm" />
+    <PlayerModalForm titleText="Добавить участника" ref="createPlayerForm" />
 
     <ModalComponent
       :buttons="[
@@ -79,10 +79,16 @@
 import { ref } from 'vue'
 import FormComponent from '@/components/FormComponent.vue'
 import PlayerRow from '../rows/PlayerRow.vue'
-import PlayerForm from './PlayerForm.vue'
+import PlayerModalForm from './PlayerModalForm.vue'
 import ModalComponent from '../ModalComponent.vue'
 
+export interface Props {
+  isLoading: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), { isLoading: false })
+
 const deleteModal = ref<InstanceType<typeof ModalComponent> | null>(null)
-const playerEditForm = ref<InstanceType<typeof PlayerForm> | null>(null)
-const createPlayerForm = ref<InstanceType<typeof PlayerForm> | null>(null)
+const playerEditForm = ref<InstanceType<typeof PlayerModalForm> | null>(null)
+const createPlayerForm = ref<InstanceType<typeof PlayerModalForm> | null>(null)
 </script>
