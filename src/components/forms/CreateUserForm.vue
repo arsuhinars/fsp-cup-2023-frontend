@@ -1,5 +1,5 @@
 <template>
-  <FormComponent class="user-form small-container">
+  <FormComponent class="user-form max-width-480">
     <label for="lastName" class="form-label">Фамилия</label>
     <input type="text" class="form-control mb-2" id="lastName" required />
 
