@@ -14,27 +14,22 @@
       Создать нового пользователя
     </RouterLink>
   </div>
-  <table class="table table-hover mt-3">
-    <thead>
-      <tr>
-        <th scope="col">id</th>
-        <th scope="col">ФИО</th>
-        <th scope="col">Дата рождения</th>
-        <th scope="col">Страна</th>
-        <th scope="col">Город</th>
-        <th scope="col">Телефон</th>
-        <th scope="col">Почта</th>
-        <th scope="col">Роль</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <UserRow @delete-user="() => deleteModal?.show()" />
-      <UserRow @delete-user="() => deleteModal?.show()" />
-      <UserRow @delete-user="() => deleteModal?.show()" />
-      <UserRow @delete-user="() => deleteModal?.show()" />
-    </tbody>
-  </table>
+  <TableComponent
+    class="table-hover"
+    :is-loading="false"
+    :columns="tableColumns"
+    :items="users"
+    :row-buttons="tableButtons"
+    @row-clicked="(user: User) => router.push({ name: 'user', params: { id: user.id } })"
+    @row-button-clicked="
+      (name) => {
+        switch (name) {
+          case 'delete':
+            deleteModal?.show()
+        }
+      }
+    "
+  />
 
   <ModalComponent
     :buttons="[
@@ -58,8 +53,72 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import UserRow from '@/components/rows/UserRow.vue'
+import { type User, UserRole, userRoleToLocaleString, extractFullName } from '@/schemas/users'
 import ModalComponent from '@/components/ModalComponent.vue'
+import TableComponent from '@/components/TableComponent.vue'
+import type { TableColumn, RowButton } from '@/components/TableComponent.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const tableColumns: TableColumn[] = [
+  {
+    fieldName: 'id',
+    displayName: 'id',
+    isHeader: true
+  },
+  {
+    fieldName: 'full_name',
+    displayName: 'ФИО',
+    toStringConverter: (user) => extractFullName(user)
+  },
+  {
+    fieldName: 'birth_date',
+    displayName: 'Дата рождения'
+  },
+  {
+    fieldName: 'country',
+    displayName: 'Страна'
+  },
+  {
+    fieldName: 'city',
+    displayName: 'Город'
+  },
+  {
+    fieldName: 'phone',
+    displayName: 'Телефон'
+  },
+  {
+    fieldName: 'email',
+    displayName: 'Почта'
+  },
+  {
+    fieldName: 'role',
+    displayName: 'Роль',
+    toStringConverter: (user) => userRoleToLocaleString(user.role)
+  }
+]
+const tableButtons: RowButton[] = [
+  {
+    name: 'delete',
+    iconClass: 'bi-trash-fill',
+    buttonClass: 'btn-danger'
+  }
+]
+const users: User[] = [
+  {
+    id: 1,
+    last_name: 'Иванов',
+    first_name: 'Иван',
+    patronymic: 'Иванович',
+    birth_date: '31.12.2023',
+    country: 'Россия',
+    city: 'Самара',
+    phone: '88005553535',
+    email: 'example@mail.com',
+    role: UserRole.Admin
+  }
+]
 
 const deleteModal = ref<InstanceType<typeof ModalComponent> | null>(null)
 </script>

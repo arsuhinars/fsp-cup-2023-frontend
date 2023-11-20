@@ -27,6 +27,10 @@ main {
   max-width: 480px;
 }
 
+.icon-btn {
+  padding: ($spacer * 0.25) ($spacer * 0.5) ($spacer * 0.25) ($spacer * 0.5)
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
