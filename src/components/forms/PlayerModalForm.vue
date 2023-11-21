@@ -3,7 +3,7 @@
     submitText="Сохранить"
     cancelText="Отмена"
     ref="modalForm"
-    @submited="() => emit('submited')"
+    @submited="() => emit('submitted')"
     :isLoading="props.isLoading"
   >
     <template v-slot:header>
@@ -66,12 +66,16 @@ export interface Props {
 const modalForm = ref<InstanceType<typeof ModalForm> | null>(null)
 
 const props = withDefaults(defineProps<Props>(), { isLoading: false })
-const emit = defineEmits(['submited'])
+const emit = defineEmits(['submitted'])
 
 function show() {
   modalForm.value?.clear()
   modalForm.value?.show()
 }
 
-defineExpose({ show })
+function hide() {
+  modalForm.value?.hide()
+}
+
+defineExpose({ show, hide })
 </script>

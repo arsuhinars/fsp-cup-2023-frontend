@@ -3,10 +3,10 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <slot name="header"></slot>
+          <h2 class="modal-title">{{ props.titleText }}</h2>
         </div>
         <div class="modal-body">
-          <slot name="body"></slot>
+          <slot></slot>
         </div>
         <div class="modal-footer">
           <button
@@ -16,7 +16,7 @@
             :key="button.name"
             @click="
               () => {
-                emit('submited', button.name)
+                emit('submitted', button.name)
                 modal?.hide()
               }
             "
@@ -40,11 +40,12 @@ export interface ModalButton {
 }
 
 const props = defineProps<{
+  titleText: string
   buttons: ModalButton[]
   cancelButtonName?: string
 }>()
 
-const emit = defineEmits(['submited'])
+const emit = defineEmits(['submitted'])
 
 const modalElement = ref<Element | null>(null)
 const modal = ref<Modal | null>(null)
@@ -55,7 +56,7 @@ function show() {
 
 function hide() {
   modal.value?.hide()
-  emit('submited', props.cancelButtonName)
+  emit('submitted', props.cancelButtonName)
 }
 
 defineExpose({ show, hide })
@@ -70,7 +71,7 @@ onMounted(() => {
   })
 
   modalElement.value.addEventListener('hidePrevented.bs.modal', () => {
-    emit('submited', props.cancelButtonName)
+    emit('submitted', props.cancelButtonName)
   })
 })
 </script>

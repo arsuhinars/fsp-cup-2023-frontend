@@ -3,70 +3,80 @@
     <div class="centered-container">
       <h2 class="mb-4">Авторизация</h2>
 
-      <FormComponent @submit="submitHandler" ref="form">
-        <div class="mb-4 mt-4">
-          <input
-            id="login"
-            class="form-control"
-            type="text"
-            placeholder="Логин"
-            required
-            ref="loginInput"
-          />
-          <div class="invalid-feedback">Необходимое поле</div>
-        </div>
-
-        <div class="mb-4">
-          <input
-            id="login"
-            class="form-control"
-            type="password"
-            placeholder="Пароль"
-            required
-            ref="passwordInput"
-          />
-          <div class="invalid-feedback">Необходимое поле</div>
-        </div>
-
-        <div class="form-text text-danger" v-if="errorMessage !== null">
-          {{ errorMessage }}
-        </div>
-
-        <button type="submit" class="btn btn-primary mt-2 mb-3 w-100">Войти</button>
-      </FormComponent>
+      <FormComponent
+        class="text-start"
+        :fields="formFields"
+        :item-prototype="loginFormPrototype"
+        submit-text="Войти"
+        submit-class="w-100"
+        :error-text="errorText"
+        error-class="text-center"
+        :is-loading="isLoading"
+        @submitted="formSubmitted"
+        ref="form"
+      />
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import FormComponent from '@/components/FormComponent.vue'
+import { onMounted, ref } from 'vue'
+import FormComponent, { type FormField } from '@/components/FormComponent.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const auth = useAuthStore()
 
+interface LoginForm {
+  email: string
+  password: string
+}
+
+const formFields: FormField[] = [
+  {
+    inputType: 'email',
+    name: 'email',
+    displayName: 'Адрес электронной почты'
+  },
+  {
+    inputType: 'password',
+    name: 'password',
+    displayName: 'Пароль'
+  }
+]
+const loginFormPrototype: LoginForm = {
+  email: '',
+  password: ''
+}
+
 const form = ref<InstanceType<typeof FormComponent> | null>(null)
-const loginInput = ref<HTMLInputElement | null>(null)
-const passwordInput = ref<HTMLInputElement | null>(null)
-const errorMessage = ref<string | null>(null)
+const isLoading = ref<boolean>(false)
+const errorText = ref<string | undefined>(undefined)
 
-async function submitHandler(event: SubmitEvent) {
-  event.preventDefault()
-
-  errorMessage.value = null
-
-  if (loginInput.value === null || passwordInput.value === null || !form.value?.isValid()) {
+async function formSubmitted(loginForm: LoginForm) {
+  if (form.value === null) {
     return
   }
 
-  let loginResult = await auth.tryLogin(loginInput.value.value, passwordInput.value.value)
-  if (loginResult) {
+  errorText.value = undefined
+  isLoading.value = true
+
+  let result: boolean
+  try {
+    result = await auth.tryLogin(loginForm.email, loginForm.password)
+  } catch (error) {
+    console.log(error)
+    errorText.value = 'Произошла непредвиденная ошибка. Попробуйте еще раз через некоторое время.'
+    return
+  } finally {
+    isLoading.value = false
+  }
+
+  if (result) {
     router.push({ name: 'main' })
   } else {
-    form.value.invalidate()
-    errorMessage.value = 'Неправильный логин или пароль'
+    errorText.value = 'Неверный логин или пароль'
   }
 }
 

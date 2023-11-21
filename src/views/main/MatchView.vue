@@ -1,3 +1,3 @@
-<template><h2>Матч</h2></template>
+<template><h2>Турнир</h2></template>
 
 <script setup lang="ts"></script>

@@ -53,8 +53,16 @@
       </button>
     </FormComponent>
 
-    <PlayerModalForm titleText="Изменить участника" ref="playerEditForm" />
-    <PlayerModalForm titleText="Добавить участника" ref="createPlayerForm" />
+    <PlayerModalForm
+      titleText="Изменить участника"
+      ref="playerEditForm"
+      @submited="() => playerEditForm?.hide()"
+    />
+    <PlayerModalForm
+      titleText="Добавить участника"
+      ref="createPlayerForm"
+      @submited="() => createPlayerForm?.hide()"
+    />
 
     <ModalComponent
       :buttons="[

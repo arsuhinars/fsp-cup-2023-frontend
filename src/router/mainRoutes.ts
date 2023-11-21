@@ -26,7 +26,8 @@ const mainRoutes: RouteRecordRaw[] = [
   {
     path: '/users/:id',
     name: 'user',
-    component: UserView
+    component: UserView,
+    props: true
   },
   {
     path: '/users/create',
@@ -46,7 +47,8 @@ const mainRoutes: RouteRecordRaw[] = [
   {
     path: '/teams/:id',
     name: 'team',
-    component: TeamView
+    component: TeamView,
+    props: true
   },
   {
     path: '/teams/create',
@@ -61,7 +63,8 @@ const mainRoutes: RouteRecordRaw[] = [
   {
     path: '/matches/:id',
     name: 'match',
-    component: MatchView
+    component: MatchView,
+    props: true
   },
   {
     path: '/matches/create',

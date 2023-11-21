@@ -8,7 +8,7 @@
         <th v-for="btn in props.rowButtons" :key="btn.name"></th>
       </tr>
     </thead>
-    <tbody class="placeholder-wave">
+    <tbody :class="{ 'placeholder-wave': isLoading }">
       <template v-if="isLoading">
         <tr v-for="i in props.loadingRowsCount" :key="i">
           <td v-for="i in props.columns.length + props.rowButtons.length" :key="i">
@@ -19,14 +19,10 @@
       <template v-else>
         <tr v-for="[i, item] in props.items.entries()" :key="i">
           <template v-for="col in props.columns" :key="col.fieldName">
-            <th
-              class="cursor-pointer"
-              v-if="col.isHeader ?? false"
-              @click="() => emit('rowClicked', item, i)"
-            >
+            <th v-if="col.isHeader ?? false">
               {{ readItemValue(item, col) }}
             </th>
-            <td class="cursor-pointer" v-else @click="() => emit('rowClicked', item, i)">
+            <td v-else>
               {{ readItemValue(item, col) }}
             </td>
           </template>
@@ -73,7 +69,7 @@ const props = withDefaults(defineProps<Props>(), {
   rowButtons: () => new Array(),
   loadingRowsCount: 5
 })
-const emit = defineEmits(['rowClicked', 'rowButtonClicked'])
+const emit = defineEmits(['rowButtonClicked'])
 
 function readItemValue(item: any, column: TableColumn): string {
   if (column.toStringConverter === undefined) {

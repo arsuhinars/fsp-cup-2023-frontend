@@ -15,7 +15,7 @@ export class ApiError extends Error {
   constructor(statusCode: number, details: any) {
     const _details = JSON.stringify(details, null, 2)
 
-    super(`API error with ${statusCode} status code.\nDetails:\n${details}`)
+    super(`API error with ${statusCode} status code.\nDetails:\n${_details}`)
 
     this._statusCode = statusCode
     this._details = _details
@@ -49,10 +49,12 @@ export async function apiDelete(path: string, params: QueryParams): Promise<any>
 type QueryParams = { [key: string]: any }
 
 function buildUrl(path: string, params: QueryParams): URL {
-  const url = new URL(path, import.meta.env.API_URL)
+  const url = new URL(path, import.meta.env.VITE_API_URL)
 
   for (const [key, value] of Object.entries(params)) {
-    url.searchParams.append(key, value)
+    if (value != null) {
+      url.searchParams.append(key, value)
+    }
   }
 
   return url
@@ -62,11 +64,13 @@ function buildRequestInit(base: RequestInit) {
   const auth = useAuthStore()
 
   const init = structuredClone(base)
-  base.headers ??= {}
+  init.headers ??= {}
 
   if (auth.credentials !== null) {
-    Object.assign(base.headers, {
-      Authorization: `Basic ${auth.credentials}`
+    Object.assign(init.headers, {
+      Authorization: `Basic ${auth.credentials}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
     })
   }
 

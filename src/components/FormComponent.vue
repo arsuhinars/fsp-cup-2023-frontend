@@ -4,14 +4,14 @@
       <!-- SelectField -->
       <template v-if="field.inputType === 'select'">
         <label class="form-label" :for="field.name">{{ field.displayName }}</label>
-        <select class="form-select" :id="field.name" :disabled="props.readOnly || props.isLoading">
-          <option
-            v-for="option in field.options"
-            :key="option.value"
-            :value="option.value"
-            :selected="readItemValue(field) === option.value"
-            @change="(ev) => writeItemValue(field, (ev.target as HTMLSelectElement).value)"
-          >
+        <select
+          class="form-select"
+          :id="field.name"
+          :disabled="(field.disabled ?? false) || props.readOnly || props.isLoading"
+          :value="readItemValue(field)"
+          @change="(ev) => writeItemValue(field, (ev.target as HTMLSelectElement).value)"
+        >
+          <option v-for="option in field.options" :key="option.value" :value="option.value">
             {{ option.displayName }}
           </option>
         </select>
@@ -23,9 +23,10 @@
             class="form-check-input"
             type="checkbox"
             :id="field.name"
-            :disabled="props.readOnly || props.isLoading"
+            :disabled="(field.disabled ?? false) || props.readOnly || props.isLoading"
             :checked="readItemValue(field)"
             @change="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).checked)"
+            required
           />
           <label class="form-check-label" :for="field.name">{{ field.displayName }}</label>
         </div>
@@ -41,10 +42,11 @@
           class="form-control"
           :type="field.inputType"
           :id="field.name"
-          :disabled="props.isLoading"
+          :disabled="(field.disabled ?? false) || props.isLoading"
           :readonly="props.readOnly"
           :value="readItemValue(field)"
           @input="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).valueAsDate)"
+          required
         />
       </template>
       <!-- InputField -->
@@ -54,26 +56,29 @@
           class="form-control"
           :type="field.inputType"
           :id="field.name"
-          :disabled="props.isLoading"
+          :disabled="(field.disabled ?? false) || props.isLoading"
           :readonly="props.readOnly"
           :placeholder="(field as InputField).placeholder ?? ''"
           :value="readItemValue(field)"
           @input="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).value)"
+          required
         />
       </template>
     </div>
 
-    <span class="text-danger mt-3" v-if="props.errorText !== undefined">
+    <p class="text-danger mt-3" :class="props.errorClass" v-if="props.errorText !== undefined">
       {{ props.errorText }}
-    </span>
+    </p>
 
     <button
       type="submit"
       class="btn btn-primary mt-3 d-flex align-items-center"
+      :class="props.submitClass ?? []"
       v-if="submitText !== undefined"
+      :disabled="props.isLoading"
     >
       <div class="spinner-border spinner-border-sm me-2" v-if="props.isLoading"></div>
-      {{ props.submitText }}
+      <span class="mx-auto">{{ props.submitText }}</span>
     </button>
   </form>
 </template>
@@ -87,6 +92,7 @@ export interface BaseField {
   inputType: string
   name: string
   displayName: string
+  disabled?: boolean
 }
 
 export interface InputField extends BaseField {
@@ -123,11 +129,13 @@ interface Props {
   isLoading?: boolean
   readOnly?: boolean
   submitText?: string
+  submitClass?: string | Array<string> | { [key: string]: any }
   errorText?: string
+  errorClass?: string | Array<string> | { [key: string]: any }
 }
 
 const props = withDefaults(defineProps<Props>(), { readOnly: false, isLoading: false })
-const emit = defineEmits(['submited'])
+const emit = defineEmits(['submitted'])
 const item = reactive<{ [key: string]: any }>({})
 const form = ref<HTMLFormElement | null>(null)
 
@@ -153,13 +161,14 @@ function writeItemValue(field: FormField, value: any) {
   }
 }
 
-function formSubmitHandler(event: SubmitEvent) {
+function formSubmitHandler(event?: SubmitEvent) {
   event?.preventDefault()
 
-  form.value?.classList.add('wav-validated')
+  form.value?.classList.add('was-validated')
 
   if (form.value?.checkValidity()) {
-    emit('submited', item)
+    form.value?.classList.remove('was-validated')
+    emit('submitted', item)
   }
 }
 
@@ -172,46 +181,8 @@ defineExpose({
   isValid: () => form.value?.checkValidity() ?? false,
   clear: () => {
     Object.assign(item, props.itemPrototype)
-    form.value?.classList.remove('wav-validated')
-  }
+    form.value?.classList.remove('was-validated')
+  },
+  submit: () => formSubmitHandler()
 })
-
-// const form = ref<HTMLFormElement | null>(null)
-
-// defineExpose({
-//   isValid: () => form.value?.checkValidity() ?? false,
-//   invalidate: () => form.value?.classList.remove('was-validated')
-// })
-
-// onMounted(() => {
-//   form.value?.addEventListener('submit', (event) => {
-//     if (!form.value?.checkValidity()) {
-//       event.preventDefault()
-//       event.stopPropagation()
-//     }
-
-//     form.value?.classList.add('was-validated')
-//   })
-// })
-
-// watchEffect(() => {
-//   if (form.value === null) {
-//     return
-//   }
-
-//   for (let input of form.value.querySelectorAll('input')) {
-//     input.readOnly = props.readOnly
-//     input.disabled = props.isLoading
-//   }
-
-//   for (let select of form.value.querySelectorAll('select')) {
-//     select.disabled = props.readOnly || props.isLoading
-//   }
-
-//   for (let submit of form.value.querySelectorAll('button[type=submit], input[type=submit]')) {
-//     if (submit instanceof HTMLButtonElement || submit instanceof HTMLInputElement) {
-//       submit.disabled = props.readOnly || props.isLoading
-//     }
-//   }
-// })
 </script>

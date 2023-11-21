@@ -3,19 +3,32 @@
     <div class="modal-dialog modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <slot name="header"></slot>
+          <h2 class="modal-title">{{ props.titleText }}</h2>
+          <button type="button" class="btn-close" @click="() => tryHide()"></button>
         </div>
         <div class="modal-body">
-          <form ref="form" @submit="submit">
-            <slot name="body"></slot>
-          </form>
+          <FormComponent
+            :fields="props.fields"
+            :item-prototype="props.itemPrototype"
+            :is-loading="props.isLoading"
+            :read-only="props.readOnly"
+            :error-text="props.errorText"
+            ref="form"
+            @submited="(item) => emit('submitted', item)"
+          />
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary" @click="submit" ref="submitButton">
-            {{ props.submitText }}
-          </button>
-          <button class="btn btn-secondary" @click="hide" ref="cancelButton">
+          <button class="btn btn-secondary" :disabled="props.isLoading" @click="() => tryHide()">
             {{ props.cancelText }}
+          </button>
+          <button
+            class="btn btn-primary"
+            :disabled="props.isLoading"
+            v-if="!props.readOnly"
+            @click="() => form?.submit()"
+          >
+            <div class="spinner-border spinner-border-sm me-2" v-if="props.isLoading"></div>
+            <span class="mx-auto">{{ props.submitText }}</span>
           </button>
         </div>
       </div>
@@ -24,97 +37,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Modal } from 'bootstrap'
+import FormComponent, { type FormField, type FormItem } from './FormComponent.vue'
 
 export interface Props {
-  readOnly: boolean
-  isLoading: boolean
+  fields: Array<FormField>
+  itemPrototype: FormItem
+  isLoading?: boolean
+  readOnly?: boolean
+  titleText: string
   submitText: string
   cancelText: string
+  errorText?: string
 }
 
 const props = withDefaults(defineProps<Props>(), { readOnly: false, isLoading: false })
+const emit = defineEmits(['submitted'])
 
-const emit = defineEmits(['canceled', 'submited'])
-
-const form = ref<HTMLFormElement | null>(null)
 const modalElement = ref<Element | null>(null)
+const form = ref<InstanceType<typeof FormComponent> | null>(null)
 const modal = ref<Modal | null>(null)
-const submitButton = ref<HTMLButtonElement | null>(null)
-const cancelButton = ref<HTMLButtonElement | null>(null)
-let inputs = new Array<HTMLInputElement>(0)
-let selects = new Array<HTMLSelectElement>(0)
+
+function tryHide() {
+  if (!props.isLoading) {
+    hide()
+  }
+}
 
 function show() {
+  form.value?.clear()
   modal.value?.show()
 }
 
 function hide() {
   modal.value?.hide()
-  emit('canceled')
 }
 
-function clear() {
-  if (form.value === null) {
-    return
-  }
-
-  form.value.classList.remove('was-validated')
-
-  for (let input of inputs) {
-    input.value = ''
-  }
-
-  for (let select of selects) {
-    select.value = ''
-  }
-}
-
-defineExpose({ show, hide, clear })
-
-function submit() {
-  if (form.value === null) {
-    return
-  }
-
-  if (form.value.checkValidity()) {
-    modal.value?.hide()
-    emit('submited')
-  }
-
-  form.value.classList.add('was-validated')
-}
-
-watchEffect(() => {
-  if (submitButton.value === null) {
-    return
-  }
-
-  submitButton.value.disabled = props.isLoading || props.readOnly
-
-  for (let input of inputs) {
-    input.readOnly = props.readOnly
-    input.disabled = props.isLoading
-  }
-
-  for (let select of selects) {
-    select.disabled = props.isLoading || props.readOnly
-  }
-})
+defineExpose({ show, hide })
 
 onMounted(() => {
-  if (modalElement.value === null || form.value === null) {
+  if (modalElement.value === null) {
     return
   }
 
-  inputs = Array.from(form.value.querySelectorAll('input'))
-  selects = Array.from(form.value.querySelectorAll('select'))
-
-  modal.value = new Modal(modalElement.value)
-
-  modalElement.value.addEventListener('hidePrevented.bs.modal', () => {
-    emit('canceled')
-  })
+  modal.value = new Modal(modalElement.value, { keyboard: false, backdrop: 'static' })
 })
 </script>

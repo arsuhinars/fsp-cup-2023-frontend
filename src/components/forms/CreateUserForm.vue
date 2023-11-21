@@ -1,44 +1,144 @@
 <template>
-  <FormComponent class="max-width-480" submit-text="Создать">
-    <label for="lastName" class="form-label">Фамилия</label>
-    <input type="text" class="form-control mb-2" id="lastName" required />
-
-    <label for="firstName" class="form-label">Имя</label>
-    <input type="text" class="form-control mb-2" id="firstName" required />
-
-    <label for="patronymic" class="form-label">Отчество</label>
-    <input type="text" class="form-control mb-2" id="patronymic" required />
-
-    <label for="birthdate" class="form-label">Дата рождения</label>
-    <input type="date" class="form-control mb-2" id="birthdate" required />
-
-    <label for="country" class="form-label">Страна</label>
-    <input type="text" class="form-control mb-2" id="country" required />
-
-    <label for="city" class="form-label">Город</label>
-    <input type="text" class="form-control mb-2" id="city" required />
-
-    <label for="phone" class="form-label">Номер телефона</label>
-    <input type="text" class="form-control mb-2" id="phone" required />
-
-    <label for="email" class="form-label">Адрес электронной почты</label>
-    <input type="text" class="form-control mb-2" id="email" required />
-
-    <label class="form-label">Роль</label>
-    <select class="form-select mb-4" id="role">
-      <option value="ADMIN" selected>Администратор</option>
-      <option value="JUDGE">Судья</option>
-      <option value="CAPTAIN">Капитан команды</option>
-    </select>
-
-    <label for="password" class="form-label mt-4">Пароль</label>
-    <input type="password" class="form-control mb-2" id="password" required />
-
-    <label for="repeatPassword" class="form-label">Повторите пароль</label>
-    <input type="password" class="form-control mb-4" id="repeatPassword" required />
-  </FormComponent>
+  <FormComponent
+    class="max-width-480"
+    submit-text="Создать"
+    :is-loading="props.isLoading"
+    :item-prototype="createUserPrototype"
+    :fields="createUserFormFields"
+    :error-text="errorText ?? extraErrorText"
+    @submitted="formSubmitHandler"
+    ref="form"
+  />
 </template>
 
 <script setup lang="ts">
-import FormComponent from '@/components/FormComponent.vue'
+import FormComponent, { type FormField } from '@/components/FormComponent.vue'
+import {
+  USER_ROLE_SELECT_OPTIONS,
+  type CreateUser,
+  UserRole,
+  JUDGE_RANK_SELECT_OPTIONS
+} from '@/schemas/users'
+import { dateToString } from '@/utils'
+import { ref, watchEffect } from 'vue'
+
+interface Props {
+  isLoading?: boolean
+  extraErrorText?: string
+}
+
+interface CreateUserForm extends CreateUser {
+  repeat_password: string
+}
+
+const props = withDefaults(defineProps<Props>(), { isLoading: false })
+const emit = defineEmits(['submitted'])
+
+const createUserFormFields: FormField[] = [
+  {
+    inputType: 'text',
+    name: 'last_name',
+    displayName: 'Фамилия'
+  },
+  {
+    inputType: 'text',
+    name: 'first_name',
+    displayName: 'Имя'
+  },
+  {
+    inputType: 'text',
+    name: 'patronymic',
+    displayName: 'Отчество'
+  },
+  {
+    inputType: 'date',
+    name: 'birth_date',
+    displayName: 'Дата рождения',
+    valueWriter: (item, value) => (item.birth_date = dateToString(value))
+  },
+  {
+    inputType: 'text',
+    name: 'country',
+    displayName: 'Страна'
+  },
+  {
+    inputType: 'text',
+    name: 'city',
+    displayName: 'Город'
+  },
+  {
+    inputType: 'text',
+    name: 'phone',
+    displayName: 'Номер телефона'
+  },
+  {
+    inputType: 'text',
+    name: 'email',
+    displayName: 'Адрес электронной почты'
+  },
+  {
+    inputType: 'password',
+    name: 'password',
+    displayName: 'Пароль'
+  },
+  {
+    inputType: 'password',
+    name: 'repeat_password',
+    displayName: 'Повторите пароль'
+  },
+  {
+    inputType: 'select',
+    name: 'role',
+    displayName: 'Роль пользователя',
+    options: USER_ROLE_SELECT_OPTIONS
+  }
+]
+const createUserPrototype: CreateUserForm = {
+  last_name: '',
+  first_name: '',
+  patronymic: '',
+  birth_date: '2000-12-31',
+  country: '',
+  city: '',
+  phone: '',
+  email: '',
+  password: '',
+  repeat_password: '',
+  role: UserRole.Admin,
+  judge_rank: null
+}
+
+const form = ref<InstanceType<typeof FormComponent> | null>(null)
+const formFields = ref<FormField[]>(createUserFormFields)
+const errorText = ref<string | undefined>(undefined)
+
+function formSubmitHandler(user: CreateUserForm) {
+  if (user.password != user.repeat_password) {
+    errorText.value = 'Пароли отличаются друг от друга'
+    return
+  }
+
+  errorText.value = undefined
+
+  if (user.role != UserRole.Judge) {
+    user.judge_rank = undefined
+  }
+
+  emit('submitted', user)
+}
+
+watchEffect(() => {
+  if (form.value?.item.role == UserRole.Judge) {
+    formFields.value = createUserFormFields.concat([
+      {
+        inputType: 'select',
+        name: 'judge_rank',
+        displayName: 'Должность/специализация судьи',
+        options: JUDGE_RANK_SELECT_OPTIONS
+      }
+    ])
+  } else {
+    formFields.value = createUserFormFields
+  }
+})
 </script>
