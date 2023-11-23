@@ -1,16 +1,34 @@
 <template>
-  <FormComponent class="max-width-480" submit-text="Создать" :is-loading="props.isLoading">
-    <label for="name" class="form-label">Название</label>
-    <input type="text" class="form-control mb-2" id="name" required />
-  </FormComponent>
+  <FormComponent
+    class="max-width-480"
+    :fields="formFields"
+    :item-prototype="teamPrototype"
+    :is-loading="props.isLoading"
+    submit-text="Создать"
+    @submitted="(team) => emit('submitted', team)"
+  />
 </template>
 
 <script setup lang="ts">
-import FormComponent from '../FormComponent.vue'
+import type { CreateTeam } from '@/schemas/teams'
+import FormComponent, { type FormField } from '../FormComponent.vue'
 
 interface Props {
-  isLoading: boolean
+  isLoading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), { isLoading: false })
+const emit = defineEmits(['submitted'])
+
+const formFields: FormField[] = [
+  {
+    inputType: 'text',
+    name: 'name',
+    displayName: 'Название',
+    maxLength: 50
+  }
+]
+const teamPrototype: CreateTeam = {
+  name: ''
+}
 </script>

@@ -2,80 +2,113 @@
   <table class="table">
     <thead>
       <tr>
-        <th v-for="column in props.columns" :key="column.fieldName">
+        <th v-for="[i, column] in props.columns.entries()" :key="i">
           {{ column.displayName }}
         </th>
-        <th v-for="btn in props.rowButtons" :key="btn.name"></th>
+        <!-- <th v-for="btn in props.rowButtons" :key="btn.name"></th> -->
       </tr>
     </thead>
     <tbody :class="{ 'placeholder-wave': isLoading }">
       <template v-if="isLoading">
         <tr v-for="i in props.loadingRowsCount" :key="i">
-          <td v-for="i in props.columns.length + props.rowButtons.length" :key="i">
-            <span class="placeholder w-100"></span>
+          <td v-for="i in props.columns.length" :key="i">
+            <span class="placeholder"></span>
           </td>
         </tr>
       </template>
       <template v-else>
         <tr v-for="[i, item] in props.items.entries()" :key="i">
           <template v-for="col in props.columns" :key="col.fieldName">
-            <th v-if="col.isHeader ?? false">
+            <th v-if="col.type === 'header'">
               {{ readItemValue(item, col) }}
             </th>
-            <td v-else>
+            <td v-else-if="col.type === 'text'">
               {{ readItemValue(item, col) }}
             </td>
+            <td class="text-center" v-else-if="col.type === 'button'">
+              <button
+                class="icon-btn btn"
+                :class="[col.buttonClass ?? 'btn-primary']"
+                @click="() => emit('rowButtonClicked', col.name, item, i)"
+              >
+                <i class="bi" :class="[col.iconClass]"></i>
+              </button>
+            </td>
+            <td class="text-center" v-else-if="col.type === 'checkmark'">
+              <input
+                type="checkmark"
+                class="form-check-input"
+                :checked="readItemValue(item, col)"
+                @change="
+                  (ev) => emit('rowChecked', (ev.target as HTMLInputElement).checked, item, i)
+                "
+              />
+            </td>
           </template>
-
-          <td v-for="btn in props.rowButtons" :key="btn.name">
-            <button
-              class="icon-btn btn"
-              :class="[btn.buttonClass ?? 'btn-primary']"
-              @click="() => emit('rowButtonClicked', btn.name, item, i)"
-            >
-              <i class="bi" :class="[btn.iconClass]"></i>
-            </button>
-          </td>
         </tr>
       </template>
     </tbody>
   </table>
 </template>
 
+<style scoped lang="scss">
+.placeholder {
+  width: 100%;
+}
+</style>
+
 <script setup lang="ts">
-export interface TableColumn {
+export interface BaseTableColumn {
+  type: string
   isHeader?: boolean
   displayName: string
-  fieldName: string
-  toStringConverter?: (a: any) => string
 }
 
-export interface RowButton {
+export interface TextTableColumn extends BaseTableColumn {
+  type: 'text' | 'header'
+  fieldName: string
+  valueReader?: (a: any) => string
+}
+
+export interface CheckmarkTableColumn extends BaseTableColumn {
+  type: 'checkmark'
+  fieldName: string
+  valueReader?: (a: any) => boolean
+}
+
+export interface ButtonTableColumn extends BaseTableColumn {
+  type: 'button'
   name: string
   iconClass: string
   buttonClass?: string
 }
 
+export type TableColumn = TextTableColumn | CheckmarkTableColumn | ButtonTableColumn
+
 export interface Props {
-  isLoading?: boolean
   columns: TableColumn[]
-  rowButtons?: RowButton[]
-  items: { [key: string]: any }
+  items: Array<{ [key: string]: any }>
+  isLoading?: boolean
   loadingRowsCount?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
-  rowButtons: () => new Array(),
   loadingRowsCount: 5
 })
-const emit = defineEmits(['rowButtonClicked'])
+const emit = defineEmits(['rowButtonClicked', 'rowChecked'])
 
-function readItemValue(item: any, column: TableColumn): string {
-  if (column.toStringConverter === undefined) {
-    return item[column.fieldName].toString()
-  } else {
-    return column.toStringConverter(item)
+function readItemValue(item: any, column: TableColumn) {
+  switch (column.type) {
+    case 'text':
+    case 'header':
+      return column.valueReader !== undefined
+        ? column.valueReader(item)
+        : item[column.fieldName].toString()
+    case 'checkmark':
+      return column.valueReader !== undefined ? column.valueReader(item) : item[column.fieldName]
+    default:
+      return ''
   }
 }
 </script>

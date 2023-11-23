@@ -4,7 +4,7 @@
     submit-text="Создать"
     :is-loading="props.isLoading"
     :item-prototype="createUserPrototype"
-    :fields="createUserFormFields"
+    :fields="formFields"
     :error-text="errorText ?? extraErrorText"
     @submitted="formSubmitHandler"
     ref="form"
@@ -34,7 +34,7 @@ interface CreateUserForm extends CreateUser {
 const props = withDefaults(defineProps<Props>(), { isLoading: false })
 const emit = defineEmits(['submitted'])
 
-const createUserFormFields: FormField[] = [
+const baseFormFields: FormField[] = [
   {
     inputType: 'text',
     name: 'last_name',
@@ -109,7 +109,7 @@ const createUserPrototype: CreateUserForm = {
 }
 
 const form = ref<InstanceType<typeof FormComponent> | null>(null)
-const formFields = ref<FormField[]>(createUserFormFields)
+const formFields = ref<FormField[]>([])
 const errorText = ref<string | undefined>(undefined)
 
 function formSubmitHandler(user: CreateUserForm) {
@@ -129,7 +129,7 @@ function formSubmitHandler(user: CreateUserForm) {
 
 watchEffect(() => {
   if (form.value?.item.role == UserRole.Judge) {
-    formFields.value = createUserFormFields.concat([
+    formFields.value = baseFormFields.concat([
       {
         inputType: 'select',
         name: 'judge_rank',
@@ -138,7 +138,7 @@ watchEffect(() => {
       }
     ])
   } else {
-    formFields.value = createUserFormFields
+    formFields.value = baseFormFields
   }
 })
 </script>

@@ -83,7 +83,7 @@
       type="submit"
       class="btn btn-primary mt-3 d-flex align-items-center"
       :class="props.submitClass ?? []"
-      v-if="submitText !== undefined"
+      v-if="submitText !== undefined && !props.readOnly"
       :disabled="props.isLoading"
     >
       <div class="spinner-border spinner-border-sm me-2" v-if="props.isLoading"></div>
