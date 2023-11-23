@@ -22,26 +22,26 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiGet(path: string, params: QueryParams): Promise<any> {
-  const url = buildUrl(path, params)
+export async function apiGet(path: string, params?: QueryParams): Promise<any> {
+  const url = buildUrl(path, params ?? {})
   const options = buildRequestInit({ method: 'GET' })
   return await doFetch(url, options)
 }
 
-export async function apiPost(path: string, body: any, params: QueryParams): Promise<any> {
-  const url = buildUrl(path, params)
+export async function apiPost(path: string, body: any, params?: QueryParams): Promise<any> {
+  const url = buildUrl(path, params ?? {})
   const options = buildRequestInit({ method: 'POST', body: JSON.stringify(body) })
   return await doFetch(url, options)
 }
 
-export async function apiPut(path: string, body: any, params: QueryParams): Promise<any> {
-  const url = buildUrl(path, params)
+export async function apiPut(path: string, body: any, params?: QueryParams): Promise<any> {
+  const url = buildUrl(path, params ?? {})
   const options = buildRequestInit({ method: 'PUT', body: JSON.stringify(body) })
   return await doFetch(url, options)
 }
 
-export async function apiDelete(path: string, params: QueryParams): Promise<any> {
-  const url = buildUrl(path, params)
+export async function apiDelete(path: string, params?: QueryParams): Promise<any> {
+  const url = buildUrl(path, params ?? {})
   const options = buildRequestInit({ method: 'DELETE' })
   return await doFetch(url, options)
 }
