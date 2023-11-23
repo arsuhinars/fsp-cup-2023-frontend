@@ -13,18 +13,18 @@ import CreateMatchView from '@/views/main/CreateMatchView.vue'
 
 const mainRoutes: RouteRecordRaw[] = [
   {
-    path: '/users/current',
+    path: '/users/current/edit',
     alias: '/',
     name: 'current_user',
     component: CurrentUserView
   },
   {
-    path: '/users/all',
+    path: '/users',
     name: 'users_list',
     component: UsersListView
   },
   {
-    path: '/users/:id',
+    path: '/users/:id/edit',
     name: 'user',
     component: UserView,
     props: true
@@ -35,12 +35,12 @@ const mainRoutes: RouteRecordRaw[] = [
     component: CreateUserView
   },
   {
-    path: '/teams/all',
+    path: '/teams',
     name: 'teams_list',
     component: TeamsListView
   },
   {
-    path: '/teams/my',
+    path: '/teams/my/edit',
     name: 'my_team',
     component: MyTeamView
   },
@@ -56,12 +56,12 @@ const mainRoutes: RouteRecordRaw[] = [
     component: CreateTeamView
   },
   {
-    path: '/matches/all',
+    path: '/matches',
     name: 'matches_list',
     component: MatchesListView
   },
   {
-    path: '/matches/:id',
+    path: '/matches/:id/edit',
     name: 'match',
     component: MatchView,
     props: true
