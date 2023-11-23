@@ -35,6 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout() {
     _credentials.value = null
+    _password.value = null
     _user.value = null
     router.push({ name: 'login' })
   }
