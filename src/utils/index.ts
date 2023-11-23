@@ -1,5 +1,7 @@
 import router from '@/router'
 import { ApiError } from '@/api/utils'
+import type { User } from '@/schemas/users'
+import type { Player } from '@/schemas/players'
 
 export function dateToString(date: Date): string {
   return (
@@ -12,7 +14,6 @@ export function dateToString(date: Date): string {
 }
 
 export function dateFromString(s: string): Date {
-  console.log(s)
   const a = s.split('-', 3)
   if (a.length < 3) {
     throw new Error('Invalid string provided')
@@ -27,4 +28,8 @@ export function pushErrorPage(error: any) {
       details: error instanceof ApiError ? error.details : ''
     }
   })
+}
+
+export function extractFullName(user: User | Player): string {
+  return `${user.last_name} ${user.first_name} ${user.patronymic}`
 }
