@@ -1,50 +1,76 @@
 <template>
-  <h2>Список команд</h2>
-  <div class="d-flex flex-row align-items-center mt-4">
-    <RouterLink :to="{ name: 'create_team' }" class="btn btn-primary ms-auto">
-      Создать новую команду
-    </RouterLink>
-  </div>
-  <table class="table table-hover mt-3">
-    <thead>
-      <tr>
-        <th scope="col">id</th>
-        <th scope="col">Название</th>
-        <th scope="col">ФИО капитана</th>
-        <th scope="col">Кол-во участников</th>
-        <th scope="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <TeamRow @delete-team="() => deleteModal?.show()" />
-      <TeamRow @delete-team="() => deleteModal?.show()" />
-      <TeamRow @delete-team="() => deleteModal?.show()" />
-      <TeamRow @delete-team="() => deleteModal?.show()" />
-    </tbody>
-  </table>
-
-  <ModalComponent
-    :buttons="[
-      { name: 'delete', displayText: 'Удалить', classList: 'btn btn-secondary' },
-      { name: 'cancel', displayText: 'Отмена', classList: 'btn btn-primary' }
-    ]"
-    :cancel-button-name="'cancel'"
-    @submited="(buttonName) => console.log(buttonName)"
-    ref="deleteModal"
-  >
-    <template v-slot:header>
-      <h1 class="modal-title fs-2">Удалить команду</h1>
-    </template>
-    <template v-slot:body>
-      <p>Вы уверены, что хотите удалить команду?</p>
-    </template>
-  </ModalComponent>
+  <h2 class="mb-3">Список команд</h2>
+  <TableComponent
+    class="table-hover mt-4"
+    :is-loading="isLoading"
+    :columns="tableColumns"
+    :items="teams"
+    @row-button-clicked="rowButtonClicked"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import TeamRow from '@/components/rows/TeamRow.vue'
-import ModalComponent from '@/components/ModalComponent.vue'
+import { ref, onMounted } from 'vue'
+import TableComponent, { type TableColumn } from '@/components/TableComponent.vue'
+import { useAuthStore } from '@/stores/auth'
+import type { Team } from '@/schemas/teams'
+import { useRouter } from 'vue-router'
+import { pushErrorPage } from '@/utils'
+import { getAllTeams } from '@/api/teams'
 
-const deleteModal = ref<InstanceType<typeof ModalComponent> | null>(null)
+const auth = useAuthStore()
+const router = useRouter()
+
+const tableColumns: TableColumn[] = [
+  {
+    type: 'header',
+    fieldName: 'id',
+    displayName: 'id',
+    isHeader: true
+  },
+  {
+    type: 'text',
+    fieldName: 'name',
+    displayName: 'Название'
+  },
+  {
+    type: 'text',
+    fieldName: 'leader_full_name',
+    displayName: 'ФИО капитана'
+  },
+  {
+    type: 'button',
+    name: 'show',
+    displayName: '',
+    iconClass: 'bi-eye-fill',
+    buttonClass: 'btn-primary'
+  }
+]
+
+const isLoading = ref<boolean>(false)
+const teams = ref<Team[]>([])
+
+function rowButtonClicked(name: string, team: Team) {
+  switch (name) {
+    case 'show':
+      router.push({ name: 'team', params: { id: team.id } })
+      break
+  }
+}
+
+onMounted(async () => {
+  if (auth.user === null) {
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    teams.value = await getAllTeams()
+  } catch (error) {
+    pushErrorPage(error)
+  } finally {
+    isLoading.value = false
+  }
+})
 </script>

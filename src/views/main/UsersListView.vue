@@ -19,21 +19,20 @@
     :is-loading="isLoading"
     :columns="tableColumns"
     :items="users"
-    :row-buttons="tableButtons"
     @row-button-clicked="rowButtonClicked"
   />
 
   <ModalComponent
     title-text="Удалить пользователя"
     :buttons="[
-      { name: 'delete', displayText: 'Удалить', classList: 'btn btn-secondary' },
-      { name: 'cancel', displayText: 'Отмена', classList: 'btn btn-primary' }
+      { name: 'delete', displayText: 'Удалить', classList: 'btn btn-danger' },
+      { name: 'cancel', displayText: 'Отмена', classList: 'btn btn-secondary' }
     ]"
     :cancel-button-name="'cancel'"
     @submitted="deleteModalSubmitted"
     ref="deleteModal"
   >
-    <p>Вы уверены, что хотите удалить пользователя?</p>
+    <p>{{ deleteModalText }}</p>
   </ModalComponent>
 </template>
 
@@ -44,59 +43,71 @@ import { onMounted, ref, watch } from 'vue'
 import { type User, userRoleToLocaleString, UserRole } from '@/schemas/users'
 import ModalComponent from '@/components/ModalComponent.vue'
 import TableComponent from '@/components/TableComponent.vue'
-import type { TableColumn, RowButton } from '@/components/TableComponent.vue'
+import type { TableColumn } from '@/components/TableComponent.vue'
 import { useRouter } from 'vue-router'
 import { deleteUserById, getAllUsers } from '@/api/users'
 import { dateFromString, extractFullName, pushErrorPage } from '@/utils'
+import { useAuthStore } from '@/stores/auth'
 
+const auth = useAuthStore()
 const router = useRouter()
 
 const tableColumns: TableColumn[] = [
   {
+    type: 'header',
     fieldName: 'id',
     displayName: 'id',
     isHeader: true
   },
   {
+    type: 'text',
     fieldName: 'full_name',
     displayName: 'ФИО',
-    toStringConverter: (user) => extractFullName(user)
+    valueReader: (user) => extractFullName(user)
   },
   {
+    type: 'text',
     fieldName: 'birth_date',
     displayName: 'Дата рождения',
-    toStringConverter: (user) => dateFromString(user.birth_date).toLocaleDateString()
+    valueReader: (user) => dateFromString(user.birth_date).toLocaleDateString()
   },
   {
+    type: 'text',
     fieldName: 'country',
     displayName: 'Страна'
   },
   {
+    type: 'text',
     fieldName: 'city',
     displayName: 'Город'
   },
   {
+    type: 'text',
     fieldName: 'phone',
     displayName: 'Телефон'
   },
   {
+    type: 'text',
     fieldName: 'email',
     displayName: 'Почта'
   },
   {
+    type: 'text',
     fieldName: 'role',
     displayName: 'Роль',
-    toStringConverter: (user) => userRoleToLocaleString(user.role)
-  }
-]
-const tableButtons: RowButton[] = [
+    valueReader: (user) => userRoleToLocaleString(user.role)
+  },
   {
+    type: 'button',
     name: 'edit',
+    displayName: '',
     iconClass: 'bi-pencil-fill',
     buttonClass: 'btn-primary'
   },
   {
+    type: 'button',
     name: 'delete',
+    displayName: '',
     iconClass: 'bi-trash-fill',
     buttonClass: 'btn-danger'
   }
@@ -106,6 +117,7 @@ const isLoading = ref<boolean>(false)
 const users = ref<User[]>([])
 const deleteModal = ref<InstanceType<typeof ModalComponent> | null>(null)
 const deleteModalUser = ref<User | null>(null)
+const deleteModalText = ref<string>('')
 const roleFilter = ref<string>('ANY')
 
 async function updateUsers() {
@@ -115,6 +127,11 @@ async function updateUsers() {
   }
 
   isLoading.value = true
+
+  if (!auth.isAuthorized) {
+    return
+  }
+
   try {
     users.value = await getAllUsers(role)
   } catch (error) {
@@ -129,6 +146,7 @@ async function deleteModalSubmitted(buttonName: string) {
   }
 
   isLoading.value = true
+
   try {
     await deleteUserById(deleteModalUser.value.id)
     await updateUsers()
@@ -146,6 +164,9 @@ function rowButtonClicked(name: string, user: User) {
       break
     case 'delete':
       deleteModalUser.value = user
+      deleteModalText.value = `Вы уверены, что хотите удалить пользователя ${extractFullName(
+        user
+      )}?`
       deleteModal.value?.show()
       break
   }

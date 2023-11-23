@@ -14,13 +14,15 @@ import { getUserById, updateUserById } from '@/api/users'
 import { ApiError } from '@/api/utils'
 import UserUpdateForm from '@/components/forms/UpdateUserForm.vue'
 import { UserRole, type User, type UpdateUser } from '@/schemas/users'
+import { useAuthStore } from '@/stores/auth'
 import { pushErrorPage } from '@/utils'
 import { ref, watchEffect } from 'vue'
 
 export interface Props {
-  id: number
+  id: string
 }
 
+const auth = useAuthStore()
 const props = defineProps<Props>()
 
 const isLoading = ref<boolean>(false)
@@ -44,7 +46,7 @@ async function submitHandler(updateUser: UpdateUser) {
   errorText.value = undefined
 
   try {
-    user.value = await updateUserById(props.id, updateUser)
+    user.value = await updateUserById(Number.parseInt(props.id), updateUser)
   } catch (error) {
     if (error instanceof ApiError && error.statusCode == 409) {
       errorText.value = 'Пользователь с данной почтой уже существует'
@@ -59,8 +61,12 @@ async function submitHandler(updateUser: UpdateUser) {
 watchEffect(async () => {
   isLoading.value = true
 
+  if (!auth.isAuthorized) {
+    return
+  }
+
   try {
-    user.value = await getUserById(props.id)
+    user.value = await getUserById(Number.parseInt(props.id))
   } catch (error) {
     pushErrorPage(error)
   } finally {
