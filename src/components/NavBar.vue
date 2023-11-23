@@ -15,7 +15,7 @@
 import { watchEffect, ref } from 'vue'
 import { type RouteLocationRaw, type RouteLocationNormalized, useRouter } from 'vue-router'
 
-interface NavItem {
+export interface NavItem {
   displayName: string
   to: RouteLocationRaw
 }

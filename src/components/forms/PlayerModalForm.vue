@@ -1,7 +1,7 @@
 <template>
   <ModalForm
     submitText="Сохранить"
-    cancelText="Выйти"
+    cancelText="Отмена"
     :titleText="props.titleText"
     :fields="formFields"
     :itemPrototype="props.player"
@@ -16,8 +16,8 @@
 import { ref } from 'vue'
 import ModalForm from '../ModalForm.vue'
 import type { FormField } from '../FormComponent.vue'
-import { dateFromString, dateToString } from '@/utils'
-import type { Player } from '@/schemas/players'
+import { dateToString } from '@/utils'
+import { GENDER_SELECT_OPTIONS, type Player } from '@/schemas/players'
 
 export interface Props {
   player: Player
@@ -54,10 +54,15 @@ const formFields: FormField[] = [
     maxLength: 50
   },
   {
+    inputType: 'select',
+    name: 'gender',
+    displayName: 'Пол',
+    options: GENDER_SELECT_OPTIONS
+  },
+  {
     inputType: 'date',
     name: 'birth_date',
     displayName: 'Дата рождения',
-    valueReader: (player) => dateFromString(player.birth_date),
     valueWriter: (player, date) => (player.birth_date = dateToString(date))
   },
   {
@@ -79,7 +84,7 @@ const formFields: FormField[] = [
     maxLength: 50
   },
   {
-    inputType: 'text',
+    inputType: 'email',
     name: 'email',
     displayName: 'Адрес электронной почты',
     maxLength: 50
@@ -105,7 +110,8 @@ const formFields: FormField[] = [
   {
     inputType: 'checkbox',
     name: 'pd_accepted',
-    displayName: 'Согласие на обработку ПД'
+    displayName: 'Согласие на обработку ПД',
+    required: true
   }
 ]
 

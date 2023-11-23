@@ -1,15 +1,11 @@
 import type { RouteRecordRaw } from 'vue-router'
 import CurrentUserView from '@/views/main/CurrentUserView.vue'
-import MatchesListView from '@/views/main/MatchesListView.vue'
 import MyTeamView from '@/views/main/MyTeamView.vue'
 import TeamsListView from '@/views/main/TeamsListView.vue'
 import UsersListView from '@/views/main/UsersListView.vue'
 import UserView from '@/views/main/UserView.vue'
 import TeamView from '@/views/main/TeamView.vue'
-import MatchView from '@/views/main/MatchView.vue'
 import CreateUserView from '@/views/main/CreateUserView.vue'
-import CreateTeamView from '@/views/main/CreateTeamView.vue'
-import CreateMatchView from '@/views/main/CreateMatchView.vue'
 
 const mainRoutes: RouteRecordRaw[] = [
   {
@@ -49,27 +45,6 @@ const mainRoutes: RouteRecordRaw[] = [
     name: 'team',
     component: TeamView,
     props: true
-  },
-  {
-    path: '/teams/create',
-    name: 'create_team',
-    component: CreateTeamView
-  },
-  {
-    path: '/matches',
-    name: 'matches_list',
-    component: MatchesListView
-  },
-  {
-    path: '/matches/:id/edit',
-    name: 'match',
-    component: MatchView,
-    props: true
-  },
-  {
-    path: '/matches/create',
-    name: 'create_match',
-    component: CreateMatchView
   }
 ]
 

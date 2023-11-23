@@ -23,12 +23,6 @@ const router = useRouter()
 
 const tableColumns: TableColumn[] = [
   {
-    type: 'header',
-    fieldName: 'id',
-    displayName: 'id',
-    isHeader: true
-  },
-  {
     type: 'text',
     fieldName: 'name',
     displayName: 'Название'
@@ -59,7 +53,7 @@ function rowButtonClicked(name: string, team: Team) {
 }
 
 onMounted(async () => {
-  if (auth.user === null) {
+  if (!auth.isAuthorized) {
     return
   }
 

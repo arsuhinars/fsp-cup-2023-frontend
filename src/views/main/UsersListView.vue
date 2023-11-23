@@ -121,15 +121,15 @@ const deleteModalText = ref<string>('')
 const roleFilter = ref<string>('ANY')
 
 async function updateUsers() {
-  let role: UserRole | null = roleFilter.value as UserRole
-  if (roleFilter.value == 'ANY') {
-    role = null
-  }
-
   isLoading.value = true
 
   if (!auth.isAuthorized) {
     return
+  }
+
+  let role: UserRole | null = roleFilter.value as UserRole
+  if (roleFilter.value == 'ANY') {
+    role = null
   }
 
   try {

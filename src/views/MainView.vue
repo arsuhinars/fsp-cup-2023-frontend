@@ -54,15 +54,16 @@
 </style>
 
 <script setup lang="ts">
-import NavBar from '@/components/NavBar.vue'
-import { useAuthStore } from '@/stores/auth'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import NavBar, { type NavItem } from '@/components/NavBar.vue'
+import { useAuthStore } from '@/stores/auth'
+import { UserRole } from '@/schemas/users'
 
 const auth = useAuthStore()
 const router = useRouter()
 
-const navItems = [
+const adminNavItems = [
   {
     displayName: 'Мой профиль',
     to: { name: 'current_user' }
@@ -74,20 +75,48 @@ const navItems = [
   {
     displayName: 'Команды',
     to: { name: 'teams_list' }
+  }
+]
+
+const judgeNavItems = [
+  {
+    displayName: 'Мой профиль',
+    to: { name: 'current_user' }
+  },
+  {
+    displayName: 'Команды',
+    to: { name: 'teams_list' }
+  }
+]
+
+const captainNavItems = [
+  {
+    displayName: 'Мой профиль',
+    to: { name: 'current_user' }
   },
   {
     displayName: 'Моя команда',
     to: { name: 'my_team' }
-  },
-  {
-    displayName: 'Турниры',
-    to: { name: 'matches_list' }
   }
 ]
+
+const navItems = ref<NavItem[]>([])
 
 onMounted(() => {
   if (!auth.isAuthorized) {
     router.replace({ name: 'login' })
+  }
+
+  switch (auth.user?.role) {
+    case UserRole.Admin:
+      navItems.value = adminNavItems
+      break
+    case UserRole.Judge:
+      navItems.value = judgeNavItems
+      break
+    case UserRole.TeamCaptain:
+      navItems.value = captainNavItems
+      break
   }
 })
 </script>

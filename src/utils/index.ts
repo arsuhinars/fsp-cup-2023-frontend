@@ -22,6 +22,7 @@ export function dateFromString(s: string): Date {
 }
 
 export function pushErrorPage(error: any) {
+  console.log(error)
   router.push({
     name: 'error',
     params: {
@@ -32,4 +33,26 @@ export function pushErrorPage(error: any) {
 
 export function extractFullName(user: User | Player): string {
   return `${user.last_name} ${user.first_name} ${user.patronymic}`
+}
+
+export function compareObjects(
+  lhs: { [key: string]: any },
+  rhs: { [key: string]: any },
+  excludeFields?: string[]
+) {
+  const excludeFieldsSet = new Set(excludeFields)
+  const fieldsLhs = Object.keys(lhs).filter((key) => !excludeFieldsSet.has(key))
+  const fieldsRhs = Object.keys(rhs).filter((key) => !excludeFieldsSet.has(key))
+
+  if (fieldsLhs.length !== fieldsRhs.length) {
+    return false
+  }
+
+  for (const key of fieldsLhs) {
+    if (lhs[key] !== rhs[key]) {
+      return false
+    }
+  }
+
+  return true
 }

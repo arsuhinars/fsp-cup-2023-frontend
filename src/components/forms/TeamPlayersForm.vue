@@ -6,8 +6,14 @@
     @row-button-clicked="rowButtonClicked"
   />
 
+  <div class="d-flex flex-row">
+    <button class="btn btn-primary ms-auto" @click="addPlayerButtonClicked">
+      Добавить нового игрока
+    </button>
+  </div>
+
   <button
-    class="btn btn-primary mt-4"
+    class="btn btn-primary mt-3"
     v-if="!props.readOnly"
     @click="() => emit('submitted', selfPlayers)"
   >
@@ -17,7 +23,7 @@
 
   <PlayerModalForm
     :title-text="modalFormTitle"
-    :player="activePlayer"
+    :player="activePlayer ?? emptyPlayer"
     :read-only="props.readOnly"
     ref="modalForm"
     @submitted="playerModalSubmitted"
@@ -39,11 +45,11 @@
 
 <script setup lang="ts">
 import { dateFromString, extractFullName } from '@/utils'
-import { reactive, ref, watchEffect } from 'vue'
+import { nextTick, reactive, ref, watchEffect } from 'vue'
 import TableComponent, { type TableColumn } from '../TableComponent.vue'
 import ModalComponent from '../ModalComponent.vue'
 import PlayerModalForm from './PlayerModalForm.vue'
-import type { Player } from '@/schemas/players'
+import { Gender, type Player } from '@/schemas/players'
 
 export interface Props {
   players: Player[]
@@ -51,13 +57,26 @@ export interface Props {
   readOnly?: boolean
 }
 
+const emptyPlayer: Player = {
+  id: 0,
+  gto_id: '',
+  nickname: '',
+  last_name: '',
+  first_name: '',
+  patronymic: '',
+  gender: Gender.Male,
+  birth_date: '2000-01-01',
+  country: '',
+  city: '',
+  phone: '',
+  email: '',
+  citizenship: '',
+  rank: '',
+  pd_accepted: false,
+  is_active_in_team: false
+}
+
 const baseTableColumns: TableColumn[] = [
-  {
-    type: 'header',
-    fieldName: 'id',
-    displayName: 'id',
-    isHeader: true
-  },
   {
     type: 'text',
     fieldName: 'nickname',
@@ -90,23 +109,7 @@ const modalFormTitle = ref<string>('')
 const deleteModal = ref<InstanceType<typeof ModalComponent> | null>(null)
 const deleteModalText = ref<string>('')
 const selfPlayers = reactive<Player[]>([])
-const activePlayer = ref<Player>({
-  id: 0,
-  gto_id: '',
-  nickname: '',
-  last_name: '',
-  first_name: '',
-  patronymic: '',
-  birth_date: '2000-01-01',
-  country: '',
-  city: '',
-  phone: '',
-  email: '',
-  citizenship: '',
-  rank: '',
-  pd_accepted: false,
-  is_active_in_team: false
-})
+const activePlayer = ref<Player | null>(null)
 const tableColumns = ref<TableColumn[]>([])
 
 function rowButtonClicked(name: string, player: Player) {
@@ -128,11 +131,25 @@ function rowButtonClicked(name: string, player: Player) {
 }
 
 function playerModalSubmitted(player: Player) {
-  Object.assign(activePlayer.value, player)
+  if (activePlayer.value === null) {
+    selfPlayers.push(Object.assign({}, player))
+  } else {
+    Object.assign(activePlayer.value, player)
+  }
+
+  modalForm.value?.hide()
+}
+
+function addPlayerButtonClicked() {
+  activePlayer.value = null
+  modalFormTitle.value = 'Добавить нового игрока'
+  nextTick(() => {
+    modalForm.value?.show()
+  })
 }
 
 function deleteModalSubmitted(button: string) {
-  if (button === 'delete') {
+  if (button === 'delete' && activePlayer.value !== null) {
     const idx = selfPlayers.indexOf(activePlayer.value)
     if (idx > -1) {
       selfPlayers.splice(idx, 1)

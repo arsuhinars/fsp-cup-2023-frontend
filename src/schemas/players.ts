@@ -1,3 +1,19 @@
+export enum Gender {
+  Male = 'MALE',
+  Female = 'FEMALE'
+}
+
+export const GENDER_SELECT_OPTIONS = [
+  {
+    displayName: 'Мужской',
+    value: Gender.Male
+  },
+  {
+    displayName: 'Женский',
+    value: Gender.Female
+  }
+]
+
 export interface Player {
   id: number
   gto_id: string
@@ -5,6 +21,7 @@ export interface Player {
   last_name: string
   first_name: string
   patronymic: string
+  gender: Gender
   birth_date: string
   country: string
   city: string
@@ -22,6 +39,7 @@ export interface CreatePlayer {
   last_name: string
   first_name: string
   patronymic: string
+  gender: Gender
   birth_date: string
   country: string
   city: string
@@ -38,6 +56,7 @@ export interface UpdatePlayer {
   last_name: string
   first_name: string
   patronymic: string
+  gender: Gender
   birth_date: string
   country: string
   city: string

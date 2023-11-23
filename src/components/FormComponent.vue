@@ -26,7 +26,7 @@
             :disabled="(field.readOnly ?? false) || props.readOnly || props.isLoading"
             :checked="readItemValue(field)"
             @change="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).checked)"
-            required
+            :required="field.required ?? false"
           />
           <label class="form-check-label" :for="field.name">{{ field.displayName }}</label>
         </div>
@@ -81,7 +81,7 @@
 
     <button
       type="submit"
-      class="btn btn-primary mt-3 d-flex align-items-center"
+      class="btn btn-primary mt-4 d-flex align-items-center"
       :class="props.submitClass ?? []"
       v-if="submitText !== undefined && !props.readOnly"
       :disabled="props.isLoading"
@@ -129,6 +129,7 @@ export interface SelectField extends BaseField {
 
 export interface CheckboxField extends BaseField {
   inputType: 'checkbox'
+  required?: boolean
   valueReader?: (item: FormItem) => boolean
   valueWriter?: (item: FormItem, value: boolean) => void
 }
