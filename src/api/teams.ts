@@ -2,7 +2,7 @@ import type { CreateTeam, Team, UpdateTeam } from '@/schemas/teams'
 import { apiGet, apiPost, apiPut } from './utils'
 
 export async function getAllTeams() {
-  return (await apiGet(`/teams`)) as Team
+  return (await apiGet(`/teams`)) as Team[]
 }
 
 export async function getTeamById(id: number) {
