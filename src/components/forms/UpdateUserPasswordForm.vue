@@ -37,17 +37,26 @@ const formFields: FormField[] = [
   {
     inputType: 'password',
     name: 'old_password',
-    displayName: 'Старый пароль'
+    displayName: 'Старый пароль',
+    minLength: 8,
+    maxLength: 50,
+    pattern: '[a-zA-Z0-9!()?{}_`~;:@#$%^&+=\\-.]*'
   },
   {
     inputType: 'password',
     name: 'new_password',
-    displayName: 'Новый пароль'
+    displayName: 'Новый пароль',
+    minLength: 8,
+    maxLength: 50,
+    pattern: '[a-zA-Z0-9!()?{}_`~;:@#$%^&+=\\-.]*'
   },
   {
     inputType: 'password',
     name: 'repeat_password',
-    displayName: 'Повторите пароль пароль'
+    displayName: 'Повторите пароль пароль',
+    minLength: 8,
+    maxLength: 50,
+    pattern: '[a-zA-Z0-9!()?{}_`~;:@#$%^&+=\\-.]*'
   }
 ]
 const formItemPrototype: PasswordUpdate = {

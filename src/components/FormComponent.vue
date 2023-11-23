@@ -49,7 +49,15 @@
         />
       </template>
       <!-- InputField -->
-      <template v-else>
+      <template
+        v-else-if="
+          field.inputType === 'text' ||
+          field.inputType === 'email' ||
+          field.inputType === 'password' ||
+          field.inputType === 'tel' ||
+          field.inputType === 'url'
+        "
+      >
         <label class="form-label" :for="field.name">{{ field.displayName }}</label>
         <input
           class="form-control"
@@ -58,6 +66,9 @@
           :disabled="props.isLoading || props.readOnly || field.readOnly"
           :placeholder="(field as InputField).placeholder ?? ''"
           :value="readItemValue(field)"
+          :minlength="field.minLength"
+          :maxlength="field.maxLength"
+          :pattern="field.pattern"
           @input="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).value)"
           required
         />
@@ -96,6 +107,9 @@ export interface BaseField {
 export interface InputField extends BaseField {
   inputType: 'text' | 'password' | 'email' | 'url' | 'tel'
   placeholder?: string
+  minLength?: number
+  maxLength?: number
+  pattern?: string
   valueReader?: (item: FormItem) => string
   valueWriter?: (item: FormItem, value: string) => void
 }

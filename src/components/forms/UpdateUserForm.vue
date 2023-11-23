@@ -36,17 +36,20 @@ const baseFormFields: FormField[] = [
   {
     inputType: 'text',
     displayName: 'Фамилия',
-    name: 'last_name'
+    name: 'last_name',
+    maxLength: 50
   },
   {
     inputType: 'text',
     displayName: 'Имя',
-    name: 'first_name'
+    name: 'first_name',
+    maxLength: 50
   },
   {
     inputType: 'text',
     displayName: 'Отчество',
-    name: 'patronymic'
+    name: 'patronymic',
+    maxLength: 50
   },
   {
     inputType: 'date',
@@ -57,22 +60,26 @@ const baseFormFields: FormField[] = [
   {
     inputType: 'text',
     displayName: 'Страна',
-    name: 'country'
+    name: 'country',
+    maxLength: 50
   },
   {
     inputType: 'text',
     displayName: 'Город',
-    name: 'city'
+    name: 'city',
+    maxLength: 50
   },
   {
     inputType: 'tel',
     displayName: 'Номер телефона',
-    name: 'phone'
+    name: 'phone',
+    maxLength: 50
   },
   {
     inputType: 'email',
     displayName: 'Адрес электронной почты',
-    name: 'email'
+    name: 'email',
+    maxLength: 50
   },
   {
     inputType: 'select',
