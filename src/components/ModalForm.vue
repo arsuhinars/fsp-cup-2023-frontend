@@ -14,7 +14,7 @@
             :read-only="props.readOnly"
             :error-text="props.errorText"
             ref="form"
-            @submited="(item) => emit('submitted', item)"
+            @submitted="(item) => emit('submitted', item)"
           />
         </div>
         <div class="modal-footer">

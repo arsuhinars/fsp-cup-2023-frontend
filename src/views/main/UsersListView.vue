@@ -20,19 +20,7 @@
     :columns="tableColumns"
     :items="users"
     :row-buttons="tableButtons"
-    @row-button-clicked="
-      (name, user) => {
-        switch (name) {
-          case 'edit':
-            router.push({ name: 'user', params: { id: user.id } })
-            break
-          case 'delete':
-            deleteModalUser = user
-            deleteModal?.show()
-            break
-        }
-      }
-    "
+    @row-button-clicked="rowButtonClicked"
   />
 
   <ModalComponent
@@ -53,13 +41,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { type User, userRoleToLocaleString, extractFullName, UserRole } from '@/schemas/users'
+import { type User, userRoleToLocaleString, UserRole } from '@/schemas/users'
 import ModalComponent from '@/components/ModalComponent.vue'
 import TableComponent from '@/components/TableComponent.vue'
 import type { TableColumn, RowButton } from '@/components/TableComponent.vue'
 import { useRouter } from 'vue-router'
 import { deleteUserById, getAllUsers } from '@/api/users'
-import { dateFromString, pushErrorPage } from '@/utils'
+import { dateFromString, extractFullName, pushErrorPage } from '@/utils'
 
 const router = useRouter()
 
@@ -148,6 +136,18 @@ async function deleteModalSubmitted(buttonName: string) {
     pushErrorPage(error)
   } finally {
     isLoading.value = false
+  }
+}
+
+function rowButtonClicked(name: string, user: User) {
+  switch (name) {
+    case 'edit':
+      router.push({ name: 'user', params: { id: user.id } })
+      break
+    case 'delete':
+      deleteModalUser.value = user
+      deleteModal.value?.show()
+      break
   }
 }
 

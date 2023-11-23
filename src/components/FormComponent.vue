@@ -7,7 +7,7 @@
         <select
           class="form-select"
           :id="field.name"
-          :disabled="(field.disabled ?? false) || props.readOnly || props.isLoading"
+          :disabled="(field.readOnly ?? false) || props.readOnly || props.isLoading"
           :value="readItemValue(field)"
           @change="(ev) => writeItemValue(field, (ev.target as HTMLSelectElement).value)"
         >
@@ -23,7 +23,7 @@
             class="form-check-input"
             type="checkbox"
             :id="field.name"
-            :disabled="(field.disabled ?? false) || props.readOnly || props.isLoading"
+            :disabled="(field.readOnly ?? false) || props.readOnly || props.isLoading"
             :checked="readItemValue(field)"
             @change="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).checked)"
             required
@@ -42,8 +42,7 @@
           class="form-control"
           :type="field.inputType"
           :id="field.name"
-          :disabled="(field.disabled ?? false) || props.isLoading"
-          :readonly="props.readOnly"
+          :disabled="props.isLoading || props.readOnly || field.readOnly"
           :value="readItemValue(field)"
           @input="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).valueAsDate)"
           required
@@ -56,8 +55,7 @@
           class="form-control"
           :type="field.inputType"
           :id="field.name"
-          :disabled="(field.disabled ?? false) || props.isLoading"
-          :readonly="props.readOnly"
+          :disabled="props.isLoading || props.readOnly || field.readOnly"
           :placeholder="(field as InputField).placeholder ?? ''"
           :value="readItemValue(field)"
           @input="(ev) => writeItemValue(field, (ev.target as HTMLInputElement).value)"
@@ -92,7 +90,7 @@ export interface BaseField {
   inputType: string
   name: string
   displayName: string
-  disabled?: boolean
+  readOnly?: boolean
 }
 
 export interface InputField extends BaseField {

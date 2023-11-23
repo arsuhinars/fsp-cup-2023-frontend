@@ -84,7 +84,3 @@ export interface UpdateUser {
   role: UserRole
   judge_rank: JudgeRank | null
 }
-
-export function extractFullName(user: User): string {
-  return `${user.last_name} ${user.first_name} ${user.patronymic}`
-}
