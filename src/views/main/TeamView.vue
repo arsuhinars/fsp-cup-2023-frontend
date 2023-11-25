@@ -2,7 +2,7 @@
   <h2>Команда</h2>
   <TeamForm class="mt-3" :team="team" :read-only="true" :is-loading="isLoading" />
   <h2 class="mt-5">Игроки</h2>
-  <TeamPlayersForm :players="players" />
+  <TeamPlayersForm :players="players" :is-loading="isLoading" />
 </template>
 
 <script setup lang="ts">
