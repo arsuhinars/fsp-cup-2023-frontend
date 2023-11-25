@@ -2,12 +2,20 @@
   <TableComponent
     :columns="tableColumns"
     :items="selfPlayers"
-    :is-loading="props.isLoading"
+    :is-loading="props.isLoading || isLoadingSelf"
     @row-button-clicked="rowButtonClicked"
   />
 
-  <div class="d-flex flex-row">
-    <button class="btn btn-primary ms-auto" @click="addPlayerButtonClicked">
+  <div class="d-flex flex-row" v-if="!props.readOnly">
+    <button
+      class="btn btn-primary ms-auto"
+      :disabled="props.isLoading || isLoadingSelf"
+      @click="addPlayerButtonClicked"
+    >
+      <div
+        class="spinner-border spinner-border-sm me-2"
+        v-if="props.isLoading || isLoadingSelf"
+      ></div>
       Добавить нового игрока
     </button>
   </div>
@@ -15,9 +23,13 @@
   <button
     class="btn btn-primary mt-3"
     v-if="!props.readOnly"
+    :disabled="props.isLoading || isLoadingSelf"
     @click="() => emit('submitted', selfPlayers)"
   >
-    <div class="spinner-border spinner-border-sm me-2" v-if="props.isLoading"></div>
+    <div
+      class="spinner-border spinner-border-sm me-2"
+      v-if="props.isLoading || isLoadingSelf"
+    ></div>
     Сохранить
   </button>
 
@@ -25,6 +37,7 @@
     :title-text="modalFormTitle"
     :player="activePlayer ?? emptyPlayer"
     :read-only="props.readOnly"
+    :is-loading="props.isLoading || isLoadingSelf"
     ref="modalForm"
     @submitted="playerModalSubmitted"
   />
@@ -44,12 +57,13 @@
 </template>
 
 <script setup lang="ts">
-import { dateFromString, extractFullName } from '@/utils'
+import { dateFromString, extractFullName, pushErrorPage } from '@/utils'
 import { nextTick, reactive, ref, watchEffect } from 'vue'
 import TableComponent, { type TableColumn } from '../TableComponent.vue'
 import ModalComponent from '../ModalComponent.vue'
 import PlayerModalForm from './PlayerModalForm.vue'
 import { Gender, type Player } from '@/schemas/players'
+import { getPlayerById } from '@/api/players'
 
 export interface Props {
   players: Player[]
@@ -104,26 +118,39 @@ const baseTableColumns: TableColumn[] = [
 
 const props = withDefaults(defineProps<Props>(), { isLoading: false, readOnly: true })
 const emit = defineEmits(['submitted'])
+const isLoadingSelf = ref<boolean>(false)
+
 const modalForm = ref<InstanceType<typeof PlayerModalForm> | null>(null)
 const modalFormTitle = ref<string>('')
+
 const deleteModal = ref<InstanceType<typeof ModalComponent> | null>(null)
 const deleteModalText = ref<string>('')
-const selfPlayers = reactive<Player[]>([])
-const activePlayer = ref<Player | null>(null)
+
 const tableColumns = ref<TableColumn[]>([])
 
-function rowButtonClicked(name: string, player: Player) {
-  activePlayer.value = player
+const selfPlayers = reactive<Player[]>([])
+const activePlayer = ref<Player | null>(null)
+
+async function rowButtonClicked(name: string, player: Player) {
   switch (name) {
-    case 'show':
-      modalFormTitle.value = 'Игрок'
-      modalForm.value?.show()
-      break
     case 'edit':
+      activePlayer.value = null
+      isLoadingSelf.value = true
       modalFormTitle.value = 'Изменить игрока'
       modalForm.value?.show()
+
+      try {
+        activePlayer.value = await getPlayerById(player.id)
+      } catch (error) {
+        pushErrorPage(error)
+      } finally {
+        modalForm.value?.hide()
+        isLoadingSelf.value = false
+      }
+
       break
     case 'delete':
+      activePlayer.value = player
       deleteModalText.value = `Вы уверены, что хотите удалить игрока ${extractFullName(player)}?`
       deleteModal.value?.show()
       break
@@ -166,15 +193,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (props.readOnly) {
-    tableColumns.value = baseTableColumns.concat([
-      {
-        type: 'button',
-        name: 'show',
-        displayName: '',
-        iconClass: 'bi-eye-fill',
-        buttonClass: 'btn-primary'
-      }
-    ])
+    tableColumns.value = baseTableColumns
   } else {
     tableColumns.value = baseTableColumns.concat([
       {
