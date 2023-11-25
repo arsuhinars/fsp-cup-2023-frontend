@@ -42,7 +42,8 @@ const formFields: FormField[] = [
   {
     inputType: 'password',
     name: 'password',
-    displayName: 'Пароль'
+    displayName: 'Пароль',
+    pattern: '^[ -9;-~]*$'
   }
 ]
 const loginFormPrototype: LoginForm = {

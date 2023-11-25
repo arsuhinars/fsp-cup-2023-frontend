@@ -79,12 +79,14 @@ const baseFormFields: FormField[] = [
   {
     inputType: 'password',
     name: 'password',
-    displayName: 'Пароль'
+    displayName: 'Пароль',
+    pattern: '^[ -9;-~]*$'
   },
   {
     inputType: 'password',
     name: 'repeat_password',
-    displayName: 'Повторите пароль'
+    displayName: 'Повторите пароль',
+    pattern: '^[ -9;-~]*$'
   },
   {
     inputType: 'select',
