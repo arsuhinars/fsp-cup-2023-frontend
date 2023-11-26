@@ -26,7 +26,7 @@ WORKDIR /frontend
 
 RUN npm install -g http-server
 
-COPY --from=build /frontend/build /frontend
+COPY --from=build /frontend/dist /frontend
 
 ARG FRONTEND_PORT
 ENV FRONTEND_PORT=$FRONTEND_PORT
