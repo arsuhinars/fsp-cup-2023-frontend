@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { dateFromString, extractFullName, pushErrorPage } from '@/utils'
+import { extractFullName, pushErrorPage } from '@/utils'
 import { nextTick, reactive, ref, watchEffect } from 'vue'
 import TableComponent, { type TableColumn } from '../TableComponent.vue'
 import ModalComponent from '../ModalComponent.vue'
@@ -101,18 +101,6 @@ const baseTableColumns: TableColumn[] = [
     fieldName: 'full_name',
     displayName: 'ФИО',
     valueReader: (player) => extractFullName(player)
-  },
-  {
-    type: 'text',
-    fieldName: 'birth_date',
-    displayName: 'Дата рождения',
-    valueReader: (player) => dateFromString(player.birth_date).toLocaleDateString()
-  },
-  {
-    type: 'text',
-    fieldName: 'pd_accepted',
-    displayName: 'Согласие на обработку ПД',
-    valueReader: (player) => (player.pd_accepted ? 'Согласен' : 'Не согласен')
   }
 ]
 

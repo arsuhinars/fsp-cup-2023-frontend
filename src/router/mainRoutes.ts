@@ -6,6 +6,10 @@ import UsersListView from '@/views/main/UsersListView.vue'
 import UserView from '@/views/main/UserView.vue'
 import TeamView from '@/views/main/TeamView.vue'
 import CreateUserView from '@/views/main/CreateUserView.vue'
+import TournamentsListView from '@/views/main/TournamentsListView.vue'
+import TournamentView from '@/views/main/TournamentView.vue'
+import tournamentRoutes from './tournamentRoutes'
+import CreateTournamentView from '@/views/main/CreateTournamentView.vue'
 
 const mainRoutes: RouteRecordRaw[] = [
   {
@@ -15,7 +19,7 @@ const mainRoutes: RouteRecordRaw[] = [
     component: CurrentUserView
   },
   {
-    path: '/users',
+    path: '/users/list',
     name: 'users_list',
     component: UsersListView
   },
@@ -31,7 +35,7 @@ const mainRoutes: RouteRecordRaw[] = [
     component: CreateUserView
   },
   {
-    path: '/teams',
+    path: '/teams/list',
     name: 'teams_list',
     component: TeamsListView
   },
@@ -45,6 +49,23 @@ const mainRoutes: RouteRecordRaw[] = [
     name: 'team',
     component: TeamView,
     props: true
+  },
+  {
+    path: '/tournaments/list',
+    name: 'tournaments_list',
+    component: TournamentsListView
+  },
+  {
+    path: '/tournaments/create',
+    name: 'create_tournament',
+    component: CreateTournamentView
+  },
+  {
+    path: '/tournaments/:id',
+    name: 'tournament',
+    component: TournamentView,
+    props: true
+    // children: tournamentRoutes
   }
 ]
 

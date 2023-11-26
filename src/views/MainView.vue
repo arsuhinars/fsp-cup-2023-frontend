@@ -3,7 +3,7 @@
     <div class="main-container">
       <div class="left-container border-end">
         <RouterLink :to="{ path: '/' }" class="h2 mb-4 text-decoration-none">
-          Sample title
+          Russian Esports Tool
         </RouterLink>
         <NavBar :items="navItems" />
         <button class="btn btn-secondary" @click="async () => await auth.logout()">
@@ -75,6 +75,10 @@ const adminNavItems = [
   {
     displayName: 'Команды',
     to: { name: 'teams_list' }
+  },
+  {
+    displayName: 'Турниры',
+    to: { name: 'tournaments_list' }
   }
 ]
 
@@ -86,6 +90,10 @@ const judgeNavItems = [
   {
     displayName: 'Команды',
     to: { name: 'teams_list' }
+  },
+  {
+    displayName: 'Турниры',
+    to: { name: 'tournaments_list' }
   }
 ]
 
@@ -97,6 +105,14 @@ const captainNavItems = [
   {
     displayName: 'Моя команда',
     to: { name: 'my_team' }
+  },
+  {
+    displayName: 'Команды',
+    to: { name: 'teams_list' }
+  },
+  {
+    displayName: 'Турниры',
+    to: { name: 'tournaments_list' }
   }
 ]
 

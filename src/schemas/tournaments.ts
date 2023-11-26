@@ -9,6 +9,23 @@ export enum TournamentStatus {
   Finished = 'FINISHED'
 }
 
+export function tournamentStatusToLocaleString(status: TournamentStatus) {
+  switch (status) {
+    case TournamentStatus.JustCreated:
+      return 'Создан'
+    case TournamentStatus.RegistrationOpened:
+      return 'Открыта регистрация'
+    case TournamentStatus.RegistartionClosed:
+      return 'Регистрация закрыта'
+    case TournamentStatus.Ongoing:
+      return 'Проводится'
+    case TournamentStatus.Finished:
+      return 'Завершен'
+    default:
+      return ''
+  }
+}
+
 export interface Tournament {
   id: number
   name: string
@@ -19,6 +36,7 @@ export interface Tournament {
   date_end: string
   date_awards: string
   main_judge_id: number
+  main_judge_full_name: string
   state: TournamentStatus
 }
 
@@ -55,6 +73,17 @@ export enum TournamentRequestStatus {
   Pending = 'PENDING',
   Accepted = 'ACCEPTED',
   Declined = 'DECLINED'
+}
+
+export function tournamentRequestStatusToLocaleString(status: TournamentRequestStatus): string {
+  switch (status) {
+    case TournamentRequestStatus.Pending:
+      return 'Ожидает ответа'
+    case TournamentRequestStatus.Accepted:
+      return 'Одобрена'
+    case TournamentRequestStatus.Declined:
+      return 'Отклонена'
+  }
 }
 
 export interface TournamentRequest {
