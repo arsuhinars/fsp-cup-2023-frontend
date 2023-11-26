@@ -8,7 +8,7 @@ import TeamView from '@/views/main/TeamView.vue'
 import CreateUserView from '@/views/main/CreateUserView.vue'
 import TournamentsListView from '@/views/main/TournamentsListView.vue'
 import TournamentView from '@/views/main/TournamentView.vue'
-import tournamentRoutes from './tournamentRoutes'
+import TeamsRatingView from '@/views/main/TeamsRatingView.vue'
 import CreateTournamentView from '@/views/main/CreateTournamentView.vue'
 
 const mainRoutes: RouteRecordRaw[] = [
@@ -66,6 +66,11 @@ const mainRoutes: RouteRecordRaw[] = [
     component: TournamentView,
     props: true
     // children: tournamentRoutes
+  },
+  {
+    path: '/teams/rating',
+    name: 'teams_rating',
+    component: TeamsRatingView
   }
 ]
 

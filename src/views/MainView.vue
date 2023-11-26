@@ -79,6 +79,10 @@ const adminNavItems = [
   {
     displayName: 'Турниры',
     to: { name: 'tournaments_list' }
+  },
+  {
+    displayName: 'Рейтинг',
+    to: { name: 'teams_rating' }
   }
 ]
 
@@ -94,6 +98,10 @@ const judgeNavItems = [
   {
     displayName: 'Турниры',
     to: { name: 'tournaments_list' }
+  },
+  {
+    displayName: 'Рейтинг',
+    to: { name: 'teams_rating' }
   }
 ]
 
@@ -113,6 +121,10 @@ const captainNavItems = [
   {
     displayName: 'Турниры',
     to: { name: 'tournaments_list' }
+  },
+  {
+    displayName: 'Рейтинг',
+    to: { name: 'teams_rating' }
   }
 ]
 
